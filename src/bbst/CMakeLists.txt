@@ -1,4 +1,3 @@
-# CMake configuration for the bbst directory
 
 set(BBST_SRC
         Node.cpp
