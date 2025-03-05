@@ -1,17 +1,28 @@
 #include <iostream>
+#include <memory>
 #include "bbst/Tree.h"
-#include "order-queue/Order.h"
+
+using std::make_unique;
 
 int main() {
-    BBST::Tree tree;
-    tree.insert(10);
-    tree.insert(5);
-    tree.insert(15);
+    auto tree = make_unique<BBST::Tree>();
+    tree->insert(4);
+    tree->insert(2);
+    tree->insert(6);
+    tree->insert(1);
+    tree->insert(3);
+    tree->insert(5);
+    tree->insert(7);
+    tree->print();
+    std::cout << "\n";
 
-    OrderQueue::Order order(100, 10);
+    tree->remove(4);
+    tree->print();
+    std::cout << "\n";
 
-    std::cout << "Order: " << order.price << "@" << order.quantity << "\n";
+    tree->remove(7);
+    tree->print();
+    std::cout << "\n";
 
-    std::cout << "Hello, World!" << std::endl;
     return 0;
 }

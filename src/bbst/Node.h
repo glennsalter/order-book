@@ -5,11 +5,14 @@ namespace BBST
 {
     class Node {
     public:
-        int data;
+        int value;
+        int height;
+        Node* parent;
         Node* left;
         Node* right;
 
-        Node(int value);
+        explicit Node(int value);
+        ~Node();
     };
 }
 
