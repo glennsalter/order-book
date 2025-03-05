@@ -5,7 +5,7 @@
 using std::make_unique;
 
 int main() {
-    auto tree = make_unique<BBST::Tree>();
+    auto tree = new BBST::Tree();
     tree->insert(4);
     tree->insert(2);
     tree->insert(6);
@@ -14,15 +14,17 @@ int main() {
     tree->insert(5);
     tree->insert(7);
     tree->print();
-    std::cout << "\n";
 
     tree->remove(4);
     tree->print();
-    std::cout << "\n";
 
     tree->remove(7);
     tree->print();
-    std::cout << "\n";
+
+    tree->search(4);
+    tree->search(6);
+
+    delete tree;
 
     return 0;
 }

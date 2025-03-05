@@ -12,8 +12,26 @@ using BBST::Node, BBST::Tree;
 Tree::Tree() : root(nullptr) {}
 
 Tree::~Tree() {
-    // TODO: Traverse the tree and delete all nodes
+    root = destructor_helper(root);
+}
 
+Node* Tree::destructor_helper(Node* node)
+{
+    if (node == nullptr)
+        return nullptr;
+    node->left = destructor_helper(node->left);
+    node->right = destructor_helper(node->right);
+    delete node;
+    return nullptr;
+}
+
+void Tree::search(int value) {
+    auto node = find(value);
+    if (node == nullptr) {
+        std::cout << value << " is not found\n";
+    } else {
+        std::cout << value << " is found\n";
+    }
 }
 
 void Tree::insert(int value) {
@@ -201,12 +219,11 @@ Node* Tree::remove_helper(Node* Z, int value) {
 
 }
 
-bool Tree::search(int value) {
+Node* Tree::find(int value) {
     auto current = root;
     while (current != nullptr) {
         if (current->value == value) {
-            std::cout << "Found " << value << "\n";
-            return true;
+            return current;
         }
         if (value > current->value) {
             current = current->right;
@@ -214,12 +231,12 @@ bool Tree::search(int value) {
             current = current->left;
         }
     }
-    std::cout << "Missing " << value << "\n";
-    return false;
+    return nullptr;
 }
 
 void Tree::print() {
     print_helper(root);
+    std::cout << "\n";
 }
 
 void Tree::print_helper(Node* node) {

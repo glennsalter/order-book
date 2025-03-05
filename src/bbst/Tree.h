@@ -11,9 +11,10 @@ namespace BBST {
         ~Tree();
         void insert(int value);
         void remove(int value);
-        bool search(int value);
+        void search(int value);
         void print();
     private:
+        Node* find(int value);
         Node* insert_helper(Node* node, int value);
         static inline int balance_factor(Node* node) {
             auto left_height = node->left ? node->left->height : 0;
@@ -27,6 +28,7 @@ namespace BBST {
         static Node* remove_helper(Node* Z, int value);
         static Node* rebalance(Node* node);
         void print_helper(Node* node);
+        static Node* destructor_helper(Node* node);
     };
 }
 
