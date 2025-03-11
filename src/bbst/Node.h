@@ -7,7 +7,6 @@ namespace BBST
     public:
         int value;
         int height;
-        Node* parent;
         Node* left;
         Node* right;
 

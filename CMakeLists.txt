@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -fPIE -pie -g")
 set(PROJECT_SRC_DIR src)
 set(PROJECT_LIBS_DIR libs)
 set(PROJECT_TEST_DIR tests)
