@@ -12,6 +12,7 @@ namespace BBST
 
         explicit Node(int value);
         ~Node();
+        void update_height();
     };
 }
 

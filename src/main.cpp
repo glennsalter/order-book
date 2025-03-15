@@ -32,5 +32,7 @@ int main() {
     tree->print("inorder");
 
     delete tree;
+
+    tree->print("inorder");
     return 0;
 }

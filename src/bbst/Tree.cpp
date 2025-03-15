@@ -15,12 +15,6 @@ Tree::~Tree() {
     root = destructor_helper(root);
 }
 
-int height(Node* N) {
-    if (N == nullptr)
-        return 0;
-    return N->height;
-}
-
 Node* Tree::destructor_helper(Node* node)
 {
     if (node == nullptr)
@@ -31,7 +25,7 @@ Node* Tree::destructor_helper(Node* node)
     return nullptr;
 }
 
-void Tree::search(int value) {
+void Tree::search(int value) const {
     auto node = find(value);
     if (node == nullptr) {
         std::cout << value << " is not found\n";
@@ -55,7 +49,7 @@ Node* Tree::insert_helper(Node* node, int value) {
     else
         return node;
 
-    node->height = 1 + std::max(node->left ? node->left->height : 0, node->right ? node->right->height : 0);
+    node->update_height();
 
     return rebalance(node);
 }
@@ -71,7 +65,6 @@ Node* Tree::rebalance(Node* node) {
         int bf_right = balance_factor(node->right);
         if (bf_right < 0) {
             // right-left
-            // node = rotate_right_left(node, node->right);
             node->right = right_rotate(node->right);
             node = left_rotate(node);
             return node;
@@ -86,7 +79,6 @@ Node* Tree::rebalance(Node* node) {
     int bf_left = balance_factor(node->left);
     if (bf_left > 0) {
         // left-right
-        // node = rotate_left_right(node->left, node);
         node->left = left_rotate(node->left);
         node = right_rotate(node);
         return node;
@@ -113,8 +105,8 @@ Node* Tree::right_rotate(Node* N) {
     N->left = T2;
 
     // Update heights
-    N->height = 1 + std::max(N->left ? N->left->height : 0, N->right ? N->right->height : 0);
-    L->height = 1 + std::max(L->left ? L->left->height : 0, L->right ? L->right->height : 0);
+    N->update_height();
+    L->update_height();
 
     return L;
 };
@@ -134,8 +126,8 @@ Node* Tree::left_rotate(Node* N) {
     N->right = T2;
 
     // Update heights
-    N->height = 1 + std::max(N->left ? N->left->height : 0, N->right ? N->right->height : 0);
-    R->height = 1 + std::max(R->left ? R->left->height : 0, R->right ? R->right->height : 0);
+    N->update_height();
+    R->update_height();
 
     return R;
 
@@ -159,7 +151,7 @@ Node* Tree::remove_helper(Node* N, int value) {
             delete N;
             return nullptr;
         }
-        else if (N->left == nullptr)
+        if (N->left == nullptr)
         {
             Node* temp = N;
             N = N->right;
@@ -189,12 +181,12 @@ Node* Tree::remove_helper(Node* N, int value) {
         }
     }
 
-    N->height = 1 + std::max(N->left ? N->left->height : 0, N->right ? N->right->height : 0);
+    N->update_height();
 
     return rebalance(N);
 }
 
-Node* Tree::find(int value) {
+Node* Tree::find(int value) const {
     auto current = root;
     while (current != nullptr) {
         if (current->value == value) {
@@ -209,7 +201,7 @@ Node* Tree::find(int value) {
     return nullptr;
 }
 
-void Tree::print(const std::string& order) {
+void Tree::print(const std::string& order) const {
     if (order == "inorder") {
         in_order_output(root);
     }
@@ -225,7 +217,7 @@ void Tree::print(const std::string& order) {
     std::cout << "\n";
 }
 
-void Tree::in_order_output(Node* node) {
+void Tree::in_order_output(const Node* node) {
     if (node == nullptr)
         return;
     in_order_output(node->left);
@@ -233,7 +225,7 @@ void Tree::in_order_output(Node* node) {
     in_order_output(node->right);
 }
 
-void Tree::pre_order_output(Node* node) {
+void Tree::pre_order_output(const Node* node) {
     if (node == nullptr)
         return;
     std::cout << node->value << " ";
@@ -241,7 +233,7 @@ void Tree::pre_order_output(Node* node) {
     pre_order_output(node->right);
 }
 
-void Tree::post_order_output(Node* node) {
+void Tree::post_order_output(const Node* node) {
     if (node == nullptr)
         return;
     post_order_output(node->left);
