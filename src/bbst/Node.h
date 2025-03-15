@@ -3,9 +3,10 @@
 
 namespace BBST
 {
+    template <typename T>
     class Node {
     public:
-        int value = -1;
+        T value;
         int height = 0;
         Node* left;
         Node* right;
@@ -16,5 +17,6 @@ namespace BBST
     };
 }
 
+template class BBST::Node<int>;
 
 #endif //ORDERBOOK_NODE_H

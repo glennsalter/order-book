@@ -9,13 +9,16 @@
 
 using BBST::Node, BBST::Tree;
 
-Tree::Tree() : root(nullptr) {}
+template<typename T>
+Tree<T>::Tree() : root(nullptr) {}
 
-Tree::~Tree() {
+template<typename T>
+Tree<T>::~Tree() {
     root = destructor_helper(root);
 }
 
-Node* Tree::destructor_helper(Node* node)
+template<typename T>
+Node<T>* Tree<T>::destructor_helper(Node<T>* node)
 {
     if (node == nullptr)
         return nullptr;
@@ -26,7 +29,8 @@ Node* Tree::destructor_helper(Node* node)
     return nullptr;
 }
 
-void Tree::search(int value) const {
+template<typename T>
+void Tree<T>::search(const T& value) const {
     auto node = find(value);
     if (node == nullptr) {
         std::cout << value << " is not found\n";
@@ -35,14 +39,16 @@ void Tree::search(int value) const {
     }
 }
 
-void Tree::insert(int value) {
+template<typename T>
+void Tree<T>::insert(const T& value) {
     std::lock_guard<std::mutex> guard(mutex);
     root = insert_helper(root, value);
 }
 
-Node* Tree::insert_helper(Node* node, int value) {
+template<typename T>
+Node<T>* Tree<T>::insert_helper(Node<T>* node, const T& value) {
     if (node == nullptr)
-        return new Node(value);
+        return new Node<T>(value);
     if (value > node->value)
         node->right = insert_helper(node->right, value);
     else if (value < node->value)
@@ -55,7 +61,8 @@ Node* Tree::insert_helper(Node* node, int value) {
     return rebalance(node);
 }
 
-Node* Tree::rebalance(Node* node) {
+template<typename T>
+Node<T>* Tree<T>::rebalance(Node<T>* node) {
     int bf = balance_factor(node);
 
     if (std::abs(bf) <= 1)
@@ -98,7 +105,8 @@ Node* Tree::rebalance(Node* node) {
   \           /
   T2         T2
 */
-Node* Tree::right_rotate(Node* N) {
+template<typename T>
+Node<T>* Tree<T>::right_rotate(Node<T>* N) {
     auto L = N->left;
     auto T2 = L->right;
 
@@ -119,7 +127,8 @@ Node* Tree::right_rotate(Node* N) {
      /        \
     T2        T2
 */
-Node* Tree::left_rotate(Node* N) {
+template<typename T>
+Node<T>* Tree<T>::left_rotate(Node<T>* N) {
     auto R = N->right;
     auto T2 = R->left;
 
@@ -134,12 +143,14 @@ Node* Tree::left_rotate(Node* N) {
 
 };
 
-void Tree::remove(int value) {
+template<typename T>
+void Tree<T>::remove(const T& value) {
     std::lock_guard<std::mutex> guard(mutex);
     root = remove_helper(root, value);
 }
 
-Node* Tree::remove_helper(Node* N, int value) {
+template<typename T>
+Node<T>* Tree<T>::remove_helper(Node<T>* N, const T& value) {
     if (N == nullptr)
         return nullptr;
     if (value > N->value) {
@@ -155,14 +166,14 @@ Node* Tree::remove_helper(Node* N, int value) {
         }
         if (N->left == nullptr)
         {
-            Node* temp = N;
+            Node<T>* temp = N;
             N = N->right;
             delete temp;
             temp = nullptr;
         }
         else if (N->right == nullptr)
         {
-            Node* temp = N;
+            Node<T>* temp = N;
             N = N->left;
             delete temp;
             temp = nullptr;
@@ -171,7 +182,7 @@ Node* Tree::remove_helper(Node* N, int value) {
         {
             // has two children
             // inorder successor (smallest in right subtree)
-            Node* temp = N->right;
+            Node<T>* temp = N->right;
             while (temp->left != nullptr) {
                 temp = temp->left;
             }
@@ -190,7 +201,8 @@ Node* Tree::remove_helper(Node* N, int value) {
     return rebalance(N);
 }
 
-Node* Tree::find(int value) const {
+template<typename T>
+Node<T>* Tree<T>::find(const T& value) const {
     auto current = root;
     while (current != nullptr) {
         if (current->value == value) {
@@ -205,7 +217,8 @@ Node* Tree::find(int value) const {
     return nullptr;
 }
 
-void Tree::print(const std::string& order) const {
+template<typename T>
+void Tree<T>::print(const std::string& order) const {
     if (order == "inorder") {
         in_order_output(root);
     }
@@ -221,7 +234,8 @@ void Tree::print(const std::string& order) const {
     std::cout << "\n";
 }
 
-void Tree::in_order_output(const Node* node) {
+template<typename T>
+void Tree<T>::in_order_output(const Node<T>* node) {
     if (node == nullptr)
         return;
     in_order_output(node->left);
@@ -229,7 +243,8 @@ void Tree::in_order_output(const Node* node) {
     in_order_output(node->right);
 }
 
-void Tree::pre_order_output(const Node* node) {
+template<typename T>
+void Tree<T>::pre_order_output(const Node<T>* node) {
     if (node == nullptr)
         return;
     std::cout << node->value << " ";
@@ -237,7 +252,8 @@ void Tree::pre_order_output(const Node* node) {
     pre_order_output(node->right);
 }
 
-void Tree::post_order_output(const Node* node) {
+template<typename T>
+void Tree<T>::post_order_output(const Node<T>* node) {
     if (node == nullptr)
         return;
     post_order_output(node->left);

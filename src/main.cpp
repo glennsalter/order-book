@@ -6,17 +6,19 @@
 #include "bbst/Tree.h"
 
 int main() {
-    auto tree = new BBST::Tree();
+    auto tree = new BBST::Tree<int>();
 
     auto insert_work = [&] (int start, int stop) {
         for (int i=start; i<stop; i++) {
-            tree->insert(i);
+            const int val = i;
+            tree->insert(val);
         }
     };
 
     auto delete_work = [&] (int start, int stop) {
         for (int i=start; i<stop; i++) {
-            tree->remove(i);
+            const int val = i;
+            tree->remove(val);
         }
     };
 

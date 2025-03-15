@@ -5,35 +5,38 @@
 #include <mutex>
 
 namespace BBST {
+    template<typename  T>
     class Tree {
     public:
-        Node* root;
+        Node<T>* root;
         Tree();
         ~Tree();
         Tree(const Tree& other);
-        void insert(int value);
-        void remove(int value);
-        void search(int value) const;
+        void insert(const T& value);
+        void remove(const T& value);
+        void search(const T& value) const;
         void print(const std::string& order) const;
     private:
         std::mutex mutex;
-        Node* find(int value) const;
+        Node<T>* find(const T& value) const;
 
-        static Node* insert_helper(Node* node, int value);
-        static inline int balance_factor(Node* node) {
+        static Node<T>* insert_helper(Node<T>* node, const T& value);
+        static inline int balance_factor(Node<T>* node) {
             auto left_height = node->left ? node->left->height : 0;
             auto right_height = node->right ? node->right->height : 0;
             return right_height - left_height;
         }
-        static Node* right_rotate(Node* N);
-        static Node* left_rotate(Node* N);
-        static Node* remove_helper(Node* N, int value);
-        static Node* rebalance(Node* node);
-        static void in_order_output(const Node* node);
-        static void pre_order_output(const Node* node);
-        static void post_order_output(const Node* node);
-        static Node* destructor_helper(Node* node);
+        static Node<T>* right_rotate(Node<T>* N);
+        static Node<T>* left_rotate(Node<T>* N);
+        static Node<T>* remove_helper(Node<T>* N, const T& value);
+        static Node<T>* rebalance(Node<T>* node);
+        static void in_order_output(const Node<T>* node);
+        static void pre_order_output(const Node<T>* node);
+        static void post_order_output(const Node<T>* node);
+        static Node<T>* destructor_helper(Node<T>* node);
     };
 }
 
+
+template class BBST::Tree<int>;
 #endif //ORDERBOOK_TREE_H
