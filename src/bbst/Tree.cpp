@@ -15,6 +15,12 @@ Tree::~Tree() {
     root = destructor_helper(root);
 }
 
+int height(Node* N) {
+    if (N == nullptr)
+        return 0;
+    return N->height;
+}
+
 Node* Tree::destructor_helper(Node* node)
 {
     if (node == nullptr)
@@ -35,6 +41,7 @@ void Tree::search(int value) {
 }
 
 void Tree::insert(int value) {
+    std::lock_guard<std::mutex> guard(mutex);
     root = insert_helper(root, value);
 }
 
@@ -43,14 +50,17 @@ Node* Tree::insert_helper(Node* node, int value) {
         return new Node(value);
     if (value > node->value)
         node->right = insert_helper(node->right, value);
-    else
+    else if (value < node->value)
         node->left = insert_helper(node->left, value);
+    else
+        return node;
+
+    node->height = 1 + std::max(node->left ? node->left->height : 0, node->right ? node->right->height : 0);
 
     return rebalance(node);
 }
 
 Node* Tree::rebalance(Node* node) {
-    node->height = 1 + std::max(node->left ? node->left->height : 0,  node->right ? node->right->height : 0);
     int bf = balance_factor(node);
 
     if (std::abs(bf) <= 1)
@@ -62,13 +72,13 @@ Node* Tree::rebalance(Node* node) {
         if (bf_right < 0) {
             // right-left
             // node = rotate_right_left(node, node->right);
-            node->right = rotate_right(node->right, node->right->left);
-            node = rotate_left(node, node->right);
+            node->right = right_rotate(node->right);
+            node = left_rotate(node);
             return node;
         }
 
         // right-right
-        node = rotate_left(node, node->right);
+        node = left_rotate(node);
         return node;
     }
 
@@ -77,146 +87,111 @@ Node* Tree::rebalance(Node* node) {
     if (bf_left > 0) {
         // left-right
         // node = rotate_left_right(node->left, node);
-        node->left = rotate_left(node->left, node->left->right);
-        node = rotate_right(node->left, node);
+        node->left = left_rotate(node->left);
+        node = right_rotate(node);
         return node;
     }
 
     // left-left
-    node = rotate_right(node->left, node);
+    node = right_rotate(node);
     return node;
 }
 
-Node* Tree::rotate_left(Node* X, Node* Z) {
-    auto t23 = Z->left;
-    X->right = t23;
-    if (t23 != nullptr) {
-        t23->parent = X;
-    }
-    Z->left = X;
-    X->parent = Z;
 
-    // update heights
-    X->height = 1 + std::max(X->left ? X->left->height : 0, X->right ? X->right->height : 0);
-    Z->height = 1 + std::max(Z->left ? Z->left->height : 0, Z->right ? Z->right->height : 0);
+/* Right rotate
+    N        L
+   /          \
+  L     =>     N
+  \           /
+  T2         T2
+*/
+Node* Tree::right_rotate(Node* N) {
+    auto L = N->left;
+    auto T2 = L->right;
 
-    return Z;
-}
+    L->right = N;
+    N->left = T2;
 
-Node* Tree::rotate_right(Node* Z, Node* X) {
-    auto t23 = X->right;
-    Z->left = t23;
-    if (t23 != nullptr) {
-        t23->parent = Z;
-    }
-    X->right = Z;
-    Z->parent = X;
+    // Update heights
+    N->height = 1 + std::max(N->left ? N->left->height : 0, N->right ? N->right->height : 0);
+    L->height = 1 + std::max(L->left ? L->left->height : 0, L->right ? L->right->height : 0);
 
-    // update heights
-    Z->height = 1 + std::max(Z->left ? Z->left->height : 0, Z->right ? Z->right->height : 0);
-    X->height = 1 + std::max(X->left ? X->left->height : 0, X->right ? X->right->height : 0);
+    return L;
+};
 
-    return X;
-}
+/* Left rotate
+    N          R
+     \        /
+      R  =>  N
+     /        \
+    T2        T2
+*/
+Node* Tree::left_rotate(Node* N) {
+    auto R = N->right;
+    auto T2 = R->left;
 
-Node* Tree::rotate_left_right(Node* Z, Node* X) {
-    auto Y = X->right;
-    auto t2 = Y->left;
-    X->right = t2;
-    if (t2 != nullptr) {
-        t2->parent = X;
-    }
-    Y->left = X;
-    X->parent = Y;
-    auto t3 = Y->right;
-    Z->left = t3;
-    if (t3 != nullptr) {
-        t3->parent = Z;
-    }
-    Y->right = Z;
-    Z->parent = Y;
+    R->left = N;
+    N->right = T2;
 
-    // update heights
-    X->height = 1 + std::max(X->left ? X->left->height : 0, X->right ? X->right->height : 0);
-    Z->height = 1 + std::max(Z->left ? Z->left->height : 0, Z->right ? Z->right->height : 0);
-    Y->height = 1 + std::max(Y->left ? Y->left->height : 0, Y->right ? Y->right->height : 0);
+    // Update heights
+    N->height = 1 + std::max(N->left ? N->left->height : 0, N->right ? N->right->height : 0);
+    R->height = 1 + std::max(R->left ? R->left->height : 0, R->right ? R->right->height : 0);
 
-    return Y;
-}
+    return R;
 
-Node* Tree::rotate_right_left(Node* X, Node*Z) {
-    auto Y = Z->left;
-    auto t3 = Y->right;
-    Z->left = t3;
-    if (t3 != nullptr) {
-        t3->parent = Z;
-    }
-    Y->right = Z;
-    Z->parent = Y;
-    auto t2 = Y->left;
-    X->right = t2;
-    if (t2 != nullptr) {
-        t2->parent = X;
-    }
-    Y->left = X;
-    X->parent = Y;
-
-    // update heights
-    X->height = 1 + std::max(X->left ? X->left->height : 0, X->right ? X->right->height : 0);
-    Z->height = 1 + std::max(Z->left ? Z->left->height : 0, Z->right ? Z->right->height : 0);
-    Y->height = 1 + std::max(Y->left ? Y->left->height : 0, Y->right ? Y->right->height : 0);
-
-    return Y;
-}
+};
 
 void Tree::remove(int value) {
+    std::lock_guard<std::mutex> guard(mutex);
     root = remove_helper(root, value);
 }
 
-Node* Tree::remove_helper(Node* Z, int value) {
-    if (Z == nullptr)
+Node* Tree::remove_helper(Node* N, int value) {
+    if (N == nullptr)
         return nullptr;
-    if (value > Z->value)
-    {
-        Z->right = remove_helper(Z->right, value);
-    }
-    else if (value < Z->value)
-    {
-        Z->left = remove_helper(Z->left, value);
-    }
-    else
-    {
-        // Found the node to remove
-        if (Z->left == nullptr && Z->right == nullptr) {
-            delete Z;
+    if (value > N->value) {
+        N->right = remove_helper(N->right, value);
+    } else if (value < N->value) {
+        N->left = remove_helper(N->left, value);
+    } else {
+        // Found the N to remove
+        if ((N->left == nullptr) && (N->right == nullptr)) {
+            delete N;
             return nullptr;
         }
-
-        if (Z->left == nullptr) {
-            auto R = Z->right;
-            delete Z;
-            return R;
+        else if (N->left == nullptr)
+        {
+            Node* temp = N;
+            N = N->right;
+            delete temp;
         }
-
-        if (Z->right == nullptr) {
-            auto L = Z->left;
-            delete Z;
-            return L;
+        else if (N->right == nullptr)
+        {
+            Node* temp = N;
+            N = N->left;
+            delete temp;
         }
+        else
+        {
+            // has two children
+            // inorder successor (smallest in right subtree)
+            Node* temp = N->right;
+            while (temp->left != nullptr) {
+                temp = temp->left;
+            }
 
-        // Node has two children
-        // Find in-order successor
-        auto min = Z->right;
-        while (min->left != nullptr) {
-            min = min->left;
+            // Copy the inorder successor's
+            // data to this node
+            N->value = temp->value;
+
+            // Delete the inorder successor
+            N->right = remove_helper(N->right, temp->value);
         }
-        Z->value = min->value;
-        Z->right = remove_helper(Z->right, min->value);
     }
 
-    Z->height = 1 + std::max(Z->left ? Z->left->height : 0, Z->right ? Z->right->height : 0);
-    return rebalance(Z);
+    N->height = 1 + std::max(N->left ? N->left->height : 0, N->right ? N->right->height : 0);
 
+    return rebalance(N);
 }
 
 Node* Tree::find(int value) {
@@ -234,16 +209,42 @@ Node* Tree::find(int value) {
     return nullptr;
 }
 
-void Tree::print() {
-    print_helper(root);
+void Tree::print(const std::string& order) {
+    if (order == "inorder") {
+        in_order_output(root);
+    }
+    else if (order == "preorder") {
+        pre_order_output(root);
+    }
+    else if (order == "postorder") {
+        post_order_output(root);
+    }
+    else {
+        std::cout << "Invalid order\n";
+    }
     std::cout << "\n";
 }
 
-void Tree::print_helper(Node* node) {
+void Tree::in_order_output(Node* node) {
     if (node == nullptr)
         return;
-
-    print_helper(node->left);
+    in_order_output(node->left);
     std::cout << node->value << " ";
-    print_helper(node->right);
+    in_order_output(node->right);
+}
+
+void Tree::pre_order_output(Node* node) {
+    if (node == nullptr)
+        return;
+    std::cout << node->value << " ";
+    pre_order_output(node->left);
+    pre_order_output(node->right);
+}
+
+void Tree::post_order_output(Node* node) {
+    if (node == nullptr)
+        return;
+    post_order_output(node->left);
+    post_order_output(node->right);
+    std::cout << node->value << " ";
 }

@@ -1,30 +1,36 @@
 #include <iostream>
-#include <memory>
+#include <atomic>
+#include <thread>
+#include <cassert>
+#include <vector>
 #include "bbst/Tree.h"
-
-using std::make_unique;
 
 int main() {
     auto tree = new BBST::Tree();
-    tree->insert(4);
-    tree->insert(2);
-    tree->insert(6);
-    tree->insert(1);
-    tree->insert(3);
-    tree->insert(5);
-    tree->insert(7);
-    tree->print();
 
-    tree->remove(4);
-    tree->print();
+    auto insert_work = [&] (int start, int stop) {
+        for (int i=start; i<stop; i++) {
+            tree->insert(i);
+        }
+    };
 
-    tree->remove(7);
-    tree->print();
+    auto delete_work = [&] (int start, int stop) {
+        for (int i=start; i<stop; i++) {
+            tree->remove(i);
+        }
+    };
 
-    tree->search(4);
-    tree->search(6);
+    std::vector<std::thread> threads;
+    threads.reserve(8);
+    threads.emplace_back(insert_work, 0, 32);
+    threads.emplace_back(delete_work, 1, 10);
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    tree->print("inorder");
 
     delete tree;
-
     return 0;
 }
