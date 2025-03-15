@@ -2,6 +2,7 @@
 #define ORDERBOOK_TREE_H
 
 #include "Node.h"
+#include <mutex>
 
 namespace BBST {
     class Tree {
