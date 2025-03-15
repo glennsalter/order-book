@@ -19,9 +19,10 @@ Node* Tree::destructor_helper(Node* node)
 {
     if (node == nullptr)
         return nullptr;
-    node->left = destructor_helper(node->left);
-    node->right = destructor_helper(node->right);
+    destructor_helper(node->left);
+    destructor_helper(node->right);
     delete node;
+    node = nullptr;
     return nullptr;
 }
 
@@ -149,6 +150,7 @@ Node* Tree::remove_helper(Node* N, int value) {
         // Found the N to remove
         if ((N->left == nullptr) && (N->right == nullptr)) {
             delete N;
+            N = nullptr;
             return nullptr;
         }
         if (N->left == nullptr)
@@ -156,12 +158,14 @@ Node* Tree::remove_helper(Node* N, int value) {
             Node* temp = N;
             N = N->right;
             delete temp;
+            temp = nullptr;
         }
         else if (N->right == nullptr)
         {
             Node* temp = N;
             N = N->left;
             delete temp;
+            temp = nullptr;
         }
         else
         {

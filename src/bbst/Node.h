@@ -5,8 +5,8 @@ namespace BBST
 {
     class Node {
     public:
-        int value;
-        int height;
+        int value = -1;
+        int height = 0;
         Node* left;
         Node* right;
 

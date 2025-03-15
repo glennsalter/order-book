@@ -20,19 +20,20 @@ int main() {
         }
     };
 
-    std::vector<std::thread> threads;
-    threads.reserve(8);
-    threads.emplace_back(insert_work, 0, 32);
-    threads.emplace_back(delete_work, 1, 10);
+    for (int i=0; i<256; i++) {
+        std::vector<std::thread> threads;
+        threads.reserve(8);
+        threads.emplace_back(insert_work, 0, 32);
+        threads.emplace_back(delete_work, 1, 10);
 
-    for (auto& thread : threads) {
-        thread.join();
+        for (auto& thread : threads) {
+            thread.join();
+        }
     }
 
     tree->print("inorder");
 
     delete tree;
-
-    tree->print("inorder");
+    tree = nullptr;
     return 0;
 }
