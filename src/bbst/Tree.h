@@ -2,6 +2,7 @@
 #define ORDERBOOK_TREE_H
 
 #include "Node.h"
+#include <iostream>
 #include <mutex>
 
 namespace BBST {
@@ -15,53 +16,52 @@ namespace BBST {
         void insert(const T& value);
         void remove(const T& value);
         void search(const T& value) const;
-        void print(const std::string& order) {
+        void print(std::string order) {
             if (order == "inorder")
-                in_order_output(root);
+                _inOrderOutput(root);
             else if (order == "preorder")
-                pre_order_output(root);
+                _preOrderOutput(root);
             else if (order == "postorder")
-                post_order_output(root);
+                _postOrderOutput(root);
             else
                 std::cout << "Invalid order";
             std::cout << "\n";
         };
     private:
-        std::mutex mutex;
-        Node<T>* find(const T& value) const;
-
-        static Node<T>* insert_helper(Node<T>* node, const T& value);
-        static int balance_factor(Node<T>* node) {
-            auto left_height = node->left ? node->left->height : 0;
-            auto right_height = node->right ? node->right->height : 0;
-            return right_height - left_height;
+        std::mutex _mutex;
+        Node<T>* _find(const T& value) const;
+        static Node<T>* _insertHelper(Node<T>* node, const T& value);
+        static int _balanceFactor(Node<T>* node) {
+            auto leftHeight = node->left ? node->left->height : 0;
+            auto rightHeight = node->right ? node->right->height : 0;
+            return rightHeight - leftHeight;
         }
-        static Node<T>* right_rotate(Node<T>* N);
-        static Node<T>* left_rotate(Node<T>* N);
-        static Node<T>* remove_helper(Node<T>* N,const T& value);
-        static Node<T>* rebalance(Node<T>* node);
-        static void in_order_output(const Node<T>* const node) {
+        static Node<T>* _rightRotate(Node<T>* N);
+        static Node<T>* _leftRotate(Node<T>* N);
+        static Node<T>* _removeHelper(Node<T>* N,const T& value);
+        static Node<T>* _rebalance(Node<T>* node);
+        static void _inOrderOutput(const Node<T>* const node) {
             if (node == nullptr)
                 return;
-            in_order_output(node->left);
+            _inOrderOutput(node->left);
             std::cout << node->value << " ";
-            in_order_output(node->right);
+            _inOrderOutput(node->right);
         }
-        static void pre_order_output(const Node<T>* const node) {
+        static void _preOrderOutput(const Node<T>* const node) {
             if (node == nullptr)
                 return;
             std::cout << node->value << " ";
-            pre_order_output(node->left);
-            pre_order_output(node->right);
+            _preOrderOutput(node->left);
+            _preOrderOutput(node->right);
         }
-        static void post_order_output(const Node<T>* const node) {
+        static void _postOrderOutput(const Node<T>* const node) {
             if (node == nullptr)
                 return;
-            post_order_output(node->left);
-            post_order_output(node->right);
+            _postOrderOutput(node->left);
+            _postOrderOutput(node->right);
             std::cout << node->value << " ";
         }
-        static Node<T>* destructor_helper(Node<T>* node);
+        static Node<T>* _destructorHelper(Node<T>* node);
     };
 }
 

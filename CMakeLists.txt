@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(PROJECT_SRC_DIR src)
 set(PROJECT_LIBS_DIR libs)
 set(PROJECT_TEST_DIR tests)
-set(PROJECT_NAME orderbook)
+set(PROJECT_NAME order-book)
 set(MODE "RUN" CACHE STRING "Mode can be RUN or TEST" FORCE)
 
 add_subdirectory(googletest)             # googletest subdirectory
@@ -17,10 +17,11 @@ configure_file(${PROJECT_SRC_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 
 add_subdirectory(${PROJECT_SRC_DIR}/bbst)
 add_subdirectory(${PROJECT_SRC_DIR}/order-queue)
+add_subdirectory(${PROJECT_SRC_DIR}/orderbook)
 
 if(MODE STREQUAL "RUN")
     add_executable(${PROJECT_NAME} ${PROJECT_SRC_DIR}/main.cpp)
-    target_link_libraries(${PROJECT_NAME} PRIVATE bbst order-queue)
+    target_link_libraries(${PROJECT_NAME} PRIVATE bbst order-queue orderbook)
 
 elseif(MODE STREQUAL "TEST")
     enable_testing()

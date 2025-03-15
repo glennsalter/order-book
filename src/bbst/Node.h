@@ -15,10 +15,10 @@ namespace BBST
 
         explicit Node(int value);
         ~Node();
-        void constexpr update_height() {
-            const int left_height = (left == nullptr) ? 0 : left->height;
-            const int right_height = (right == nullptr) ? 0 : right->height;
-            height = 1 + std::max(left_height, right_height);
+        void constexpr updateHeight() {
+            const int leftHeight = (left == nullptr) ? 0 : left->height;
+            const int rightHeight = (right == nullptr) ? 0 : right->height;
+            height = 1 + std::max(leftHeight, rightHeight);
         }
     };
 }

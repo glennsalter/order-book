@@ -14,16 +14,16 @@ Tree<T>::Tree() : root(nullptr) {}
 
 template<typename T>
 Tree<T>::~Tree() {
-    root = destructor_helper(root);
+    root = _destructorHelper(root);
 }
 
 template<typename T>
-Node<T>* Tree<T>::destructor_helper(Node<T>* node)
+Node<T>* Tree<T>::_destructorHelper(Node<T>* node)
 {
     if (node == nullptr)
         return nullptr;
-    destructor_helper(node->left);
-    destructor_helper(node->right);
+    _destructorHelper(node->left);
+    _destructorHelper(node->right);
     delete node;
     node = nullptr;
     return nullptr;
@@ -31,7 +31,7 @@ Node<T>* Tree<T>::destructor_helper(Node<T>* node)
 
 template<typename T>
 void Tree<T>::search(const T& value) const {
-    auto node = find(value);
+    auto node = _find(value);
     if (node == nullptr) {
         std::cout << value << " is not found\n";
     } else {
@@ -41,59 +41,59 @@ void Tree<T>::search(const T& value) const {
 
 template<typename T>
 void Tree<T>::insert(const T& value) {
-    std::lock_guard<std::mutex> guard(mutex);
-    root = insert_helper(root, value);
+    std::lock_guard<std::mutex> guard(_mutex);
+    root = _insertHelper(root, value);
 }
 
 template<typename T>
-Node<T>* Tree<T>::insert_helper(Node<T>* node, const T& value) {
+Node<T>* Tree<T>::_insertHelper(Node<T>* node, const T& value) {
     if (node == nullptr)
         return new Node<T>(value);
     if (value > node->value)
-        node->right = insert_helper(node->right, value);
+        node->right = _insertHelper(node->right, value);
     else if (value < node->value)
-        node->left = insert_helper(node->left, value);
+        node->left = _insertHelper(node->left, value);
     else
         return node;
 
-    node->update_height();
+    node->updateHeight();
 
-    return rebalance(node);
+    return _rebalance(node);
 }
 
 template<typename T>
-Node<T>* Tree<T>::rebalance(Node<T>* node) {
-    int bf = balance_factor(node);
+Node<T>* Tree<T>::_rebalance(Node<T>* node) {
+    int bf = _balanceFactor(node);
 
     if (std::abs(bf) <= 1)
         return node;
 
     // case: right heavy
     if (bf > 0) {
-        int bf_right = balance_factor(node->right);
+        int bf_right = _balanceFactor(node->right);
         if (bf_right < 0) {
             // right-left
-            node->right = right_rotate(node->right);
-            node = left_rotate(node);
+            node->right = _rightRotate(node->right);
+            node = _leftRotate(node);
             return node;
         }
 
         // right-right
-        node = left_rotate(node);
+        node = _leftRotate(node);
         return node;
     }
 
     // case: left heavy
-    int bf_left = balance_factor(node->left);
+    int bf_left = _balanceFactor(node->left);
     if (bf_left > 0) {
         // left-right
-        node->left = left_rotate(node->left);
-        node = right_rotate(node);
+        node->left = _leftRotate(node->left);
+        node = _rightRotate(node);
         return node;
     }
 
     // left-left
-    node = right_rotate(node);
+    node = _rightRotate(node);
     return node;
 }
 
@@ -106,7 +106,7 @@ Node<T>* Tree<T>::rebalance(Node<T>* node) {
   T2         T2
 */
 template<typename T>
-Node<T>* Tree<T>::right_rotate(Node<T>* N) {
+Node<T>* Tree<T>::_rightRotate(Node<T>* N) {
     auto L = N->left;
     auto T2 = L->right;
 
@@ -114,8 +114,8 @@ Node<T>* Tree<T>::right_rotate(Node<T>* N) {
     N->left = T2;
 
     // Update heights
-    N->update_height();
-    L->update_height();
+    N->updateHeight();
+    L->updateHeight();
 
     return L;
 };
@@ -128,7 +128,7 @@ Node<T>* Tree<T>::right_rotate(Node<T>* N) {
     T2        T2
 */
 template<typename T>
-Node<T>* Tree<T>::left_rotate(Node<T>* N) {
+Node<T>* Tree<T>::_leftRotate(Node<T>* N) {
     auto R = N->right;
     auto T2 = R->left;
 
@@ -136,8 +136,8 @@ Node<T>* Tree<T>::left_rotate(Node<T>* N) {
     N->right = T2;
 
     // Update heights
-    N->update_height();
-    R->update_height();
+    N->updateHeight();
+    R->updateHeight();
 
     return R;
 
@@ -145,18 +145,18 @@ Node<T>* Tree<T>::left_rotate(Node<T>* N) {
 
 template<typename T>
 void Tree<T>::remove(const T& value) {
-    std::lock_guard<std::mutex> guard(mutex);
-    root = remove_helper(root, value);
+    std::lock_guard<std::mutex> guard(_mutex);
+    root = _removeHelper(root, value);
 }
 
 template<typename T>
-Node<T>* Tree<T>::remove_helper(Node<T>* N, const T& value) {
+Node<T>* Tree<T>::_removeHelper(Node<T>* N, const T& value) {
     if (N == nullptr)
         return nullptr;
     if (value > N->value) {
-        N->right = remove_helper(N->right, value);
+        N->right = _removeHelper(N->right, value);
     } else if (value < N->value) {
-        N->left = remove_helper(N->left, value);
+        N->left = _removeHelper(N->left, value);
     } else {
         // Found the N to remove
         if ((N->left == nullptr) && (N->right == nullptr)) {
@@ -192,17 +192,17 @@ Node<T>* Tree<T>::remove_helper(Node<T>* N, const T& value) {
             N->value = temp->value;
 
             // Delete the inorder successor
-            N->right = remove_helper(N->right, temp->value);
+            N->right = _removeHelper(N->right, temp->value);
         }
     }
 
-    N->update_height();
+    N->updateHeight();
 
-    return rebalance(N);
+    return _rebalance(N);
 }
 
 template<typename T>
-Node<T>* Tree<T>::find(const T& value) const {
+Node<T>* Tree<T>::_find(const T& value) const {
     auto current = root;
     while (current != nullptr) {
         if (current->value == value) {

@@ -1,11 +1,24 @@
 #include <iostream>
-#include <atomic>
 #include <thread>
 #include <cassert>
 #include <vector>
 #include "bbst/Tree.h"
+#include "orderbook/OrderBook.h"
+
 
 int main() {
+    // /*
+    auto orderBook = new OrderBook::OrderBook();
+
+    orderBook->writeCopy.insert(1);
+    orderBook->writeCopy.search(1);
+
+    delete orderBook;
+    return 0;
+    // */
+
+    /*
+    // Test out the BBST
     auto tree = new BBST::Tree<int>();
 
     auto insert_work = [&] (int start, int stop) {
@@ -38,4 +51,5 @@ int main() {
     delete tree;
     tree = nullptr;
     return 0;
+    */
 }
