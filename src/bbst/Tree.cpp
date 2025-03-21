@@ -10,11 +10,11 @@
 using BBST::Node, BBST::Tree;
 
 template<typename T>
-Tree<T>::Tree() : root(nullptr) {}
+Tree<T>::Tree() : _root(nullptr) {}
 
 template<typename T>
 Tree<T>::~Tree() {
-    root = _destructorHelper(root);
+    _root = _destructorHelper(_root);
 }
 
 template<typename T>
@@ -42,7 +42,7 @@ void Tree<T>::search(const T& value) const {
 template<typename T>
 void Tree<T>::insert(const T& value) {
     std::lock_guard<std::mutex> guard(_mutex);
-    root = _insertHelper(root, value);
+    _root = _insertHelper(_root, value);
 }
 
 template<typename T>
@@ -146,7 +146,7 @@ Node<T>* Tree<T>::_leftRotate(Node<T>* N) {
 template<typename T>
 void Tree<T>::remove(const T& value) {
     std::lock_guard<std::mutex> guard(_mutex);
-    root = _removeHelper(root, value);
+    _root = _removeHelper(_root, value);
 }
 
 template<typename T>
@@ -203,7 +203,7 @@ Node<T>* Tree<T>::_removeHelper(Node<T>* N, const T& value) {
 
 template<typename T>
 Node<T>* Tree<T>::_find(const T& value) const {
-    auto current = root;
+    auto current = _root;
     while (current != nullptr) {
         if (current->value == value) {
             return current;

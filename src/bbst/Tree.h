@@ -9,7 +9,6 @@ namespace BBST {
     template<typename T>
     class Tree {
     public:
-        Node<T>* root;
         Tree();
         ~Tree();
         Tree(const Tree& other);
@@ -18,16 +17,17 @@ namespace BBST {
         void search(const T& value) const;
         void print(std::string order) {
             if (order == "inorder")
-                _inOrderOutput(root);
+                _inOrderOutput(_root);
             else if (order == "preorder")
-                _preOrderOutput(root);
+                _preOrderOutput(_root);
             else if (order == "postorder")
-                _postOrderOutput(root);
+                _postOrderOutput(_root);
             else
                 std::cout << "Invalid order";
             std::cout << "\n";
         };
     private:
+        Node<T>* _root;
         std::mutex _mutex;
         Node<T>* _find(const T& value) const;
         static Node<T>* _insertHelper(Node<T>* node, const T& value);
