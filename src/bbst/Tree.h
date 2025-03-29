@@ -14,7 +14,7 @@ namespace BBST {
         Tree(const Tree& other);
         void insert(const T& value);
         void remove(const T& value);
-        void search(const T& value) const;
+        bool search(const T& value) const;
         T& lowest();
         T& highest();
         void print(std::string order) {
@@ -28,6 +28,9 @@ namespace BBST {
                 std::cout << "Invalid order";
             std::cout << "\n";
         };
+        constexpr int height() {
+            return _root->height;
+        }
     private:
         Node<T>* _root;
         std::mutex _mutex;

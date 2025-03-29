@@ -6,7 +6,10 @@ set(PROJECT_SRC_DIR src)
 set(PROJECT_LIBS_DIR libs)
 set(PROJECT_TEST_DIR tests)
 set(PROJECT_NAME order-book)
-set(MODE "RUN" CACHE STRING "Mode can be RUN or TEST" FORCE)
+
+# MODE: TEST | RUN
+set(MODE "TEST")
+#set(MODE "RUN")
 
 add_subdirectory(googletest)             # googletest subdirectory
 include_directories(googletest/include)  # googletest include directory
@@ -24,19 +27,12 @@ if(MODE STREQUAL "RUN")
     target_link_libraries(${PROJECT_NAME} PRIVATE bbst order-queue orderbook)
 
 elseif(MODE STREQUAL "TEST")
+    set(MAIN_TEST main-test)
     enable_testing()
-    add_executable(
-            hello_test
-            ${PROJECT_TEST_DIR}/hello_test.cc
-    )
-    target_link_libraries(
-            hello_test
-            bbst
-            order-queue
-            GTest::gtest_main
-    )
+    add_executable(${MAIN_TEST} ${PROJECT_TEST_DIR}/main_test.cc)
+    target_link_libraries(${MAIN_TEST} bbst order-queue GTest::gtest_main)
     include(GoogleTest)
-    gtest_discover_tests(hello_test)
+    gtest_discover_tests(${MAIN_TEST})
 else()
     message(FATAL_ERROR "Invalid MODE: ${MODE}. Please set MODE to either RUN or TEST.")
 endif()

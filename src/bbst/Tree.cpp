@@ -30,13 +30,11 @@ Node<T>* Tree<T>::_destructorHelper(Node<T>* node)
 }
 
 template<typename T>
-void Tree<T>::search(const T& value) const {
+bool Tree<T>::search(const T& value) const {
     auto node = _find(value);
-    if (node == nullptr) {
-        std::cout << value << " is not found\n";
-    } else {
-        std::cout << value << " is found\n";
-    }
+    if (node==nullptr)
+        return false;
+    return true;
 }
 
 template<typename T>
