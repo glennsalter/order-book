@@ -40,6 +40,28 @@ void Tree<T>::search(const T& value) const {
 }
 
 template<typename T>
+T& Tree<T>::lowest() {
+    auto current = _root;
+    T& smallest = _root->value;
+    while (current != nullptr) {
+        smallest = current->value;
+        current = current->left;
+    }
+    return smallest;
+}
+
+template<typename T>
+T& Tree<T>::highest() {
+    auto current = _root;
+    T& highest = _root->value;
+    while (current != nullptr) {
+        highest = current->value;
+        current = current->right;
+    }
+    return highest;
+}
+
+template<typename T>
 void Tree<T>::insert(const T& value) {
     std::lock_guard<std::mutex> guard(_mutex);
     _root = _insertHelper(_root, value);
@@ -95,6 +117,33 @@ Node<T>* Tree<T>::_rebalance(Node<T>* node) {
     // left-left
     node = _rightRotate(node);
     return node;
+}
+
+template<typename T>
+void Tree<T>::_inOrderOutput(const Node<T> * const node) {
+    if (node == nullptr)
+        return;
+    _inOrderOutput(node->left);
+    std::cout << node->value << " ";
+    _inOrderOutput(node->right);
+}
+
+template<typename T>
+void Tree<T>::_preOrderOutput(const Node<T> * const node) {
+    if (node == nullptr)
+        return;
+    std::cout << node->value << " ";
+    _preOrderOutput(node->left);
+    _preOrderOutput(node->right);
+}
+
+template<typename T>
+void Tree<T>::_postOrderOutput(const Node<T> * const node) {
+    if (node == nullptr)
+        return;
+    _postOrderOutput(node->left);
+    _postOrderOutput(node->right);
+    std::cout << node->value << " ";
 }
 
 

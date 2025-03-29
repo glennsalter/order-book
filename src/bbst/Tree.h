@@ -15,6 +15,8 @@ namespace BBST {
         void insert(const T& value);
         void remove(const T& value);
         void search(const T& value) const;
+        T& lowest();
+        T& highest();
         void print(std::string order) {
             if (order == "inorder")
                 _inOrderOutput(_root);
@@ -40,27 +42,9 @@ namespace BBST {
         static Node<T>* _leftRotate(Node<T>* N);
         static Node<T>* _removeHelper(Node<T>* N,const T& value);
         static Node<T>* _rebalance(Node<T>* node);
-        static void _inOrderOutput(const Node<T>* const node) {
-            if (node == nullptr)
-                return;
-            _inOrderOutput(node->left);
-            std::cout << node->value << " ";
-            _inOrderOutput(node->right);
-        }
-        static void _preOrderOutput(const Node<T>* const node) {
-            if (node == nullptr)
-                return;
-            std::cout << node->value << " ";
-            _preOrderOutput(node->left);
-            _preOrderOutput(node->right);
-        }
-        static void _postOrderOutput(const Node<T>* const node) {
-            if (node == nullptr)
-                return;
-            _postOrderOutput(node->left);
-            _postOrderOutput(node->right);
-            std::cout << node->value << " ";
-        }
+        static void _inOrderOutput(const Node<T>* node);
+        static void _preOrderOutput(const Node<T>* node);
+        static void _postOrderOutput(const Node<T>*node);
         static Node<T>* _destructorHelper(Node<T>* node);
     };
 }
