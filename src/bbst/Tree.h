@@ -4,6 +4,7 @@
 #include "Node.h"
 #include <iostream>
 #include <mutex>
+#include <cstddef>
 
 namespace BBST {
     template<typename T>
@@ -28,7 +29,7 @@ namespace BBST {
                 std::cout << "Invalid order";
             std::cout << "\n";
         };
-        constexpr int height() {
+        constexpr size_t height() {
             return _root->height;
         }
     private:
@@ -53,5 +54,5 @@ namespace BBST {
 }
 
 
-template class BBST::Tree<int>;
+template class BBST::Tree<size_t>;
 #endif //ORDERBOOK_TREE_H

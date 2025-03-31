@@ -1,3 +1,3 @@
 #include "Order.h"
 
-OrderQueue::Order::Order(int price, int quantity) : price(price), quantity(quantity) {}
+OrderQueue::Order::Order(size_t price, size_t quantity) : price(price), quantity(quantity) {}

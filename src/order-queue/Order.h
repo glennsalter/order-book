@@ -1,13 +1,14 @@
 #ifndef ORDERBOOK_ORDER_H
 #define ORDERBOOK_ORDER_H
+#include <cstddef>
 
 namespace OrderQueue {
     class Order {
     public:
-        int price;
-        int quantity;
+        size_t price;
+        size_t quantity;
 
-        Order(int price, int quantity);
+        Order(size_t price, size_t quantity);
     };
 }
 

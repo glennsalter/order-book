@@ -16,9 +16,9 @@ TEST (SimpleTest, SimpleTest) {
 }
 
 TEST(InsertTest, TestBBST) {
-    auto tree = std::make_unique<BBST::Tree<int>>();
-    int start = 0, stop = 2 << 4;
-    for (int i=start; i<=stop; i++) {
+    auto tree = std::make_unique<BBST::Tree<size_t>>();
+    size_t start = 0, stop = 2 << 4;
+    for (size_t i=start; i<=stop; i++) {
         tree->insert(i);
     }
 
@@ -32,26 +32,26 @@ TEST(InsertTest, TestBBST) {
 TEST(HeightTest, TestBBST) {
     // Inserts 2^max_height nodes
     // Height should be at most max_height + 1
-    auto tree = std::make_unique<BBST::Tree<int>>();
-    int max_height = 13;
-    for (int i=0; i<1<<max_height; i++) {
+    auto tree = std::make_unique<BBST::Tree<size_t>>();
+    size_t max_height = 13;
+    for (size_t i=0; i<1<<max_height; i++) {
         tree->insert(i);
     }
-    const int height = tree->height();
+    const size_t height = tree->height();
     EXPECT_LE(height, max_height + 1);
 }
 
 TEST(DeleteTest, TestBBST) {
-    auto tree = std::make_unique<BBST::Tree<int>>();
-    for (int i=0; i<25; i++) {
+    auto tree = std::make_unique<BBST::Tree<size_t>>();
+    for (size_t i=0; i<25; i++) {
         tree->insert(i);
     }
 
-    for (int i=2; i<25; i=i+2) {
+    for (size_t i=2; i<25; i=i+2) {
         tree->remove(i);
     }
 
-    for (int i=2; i<25; i=i+2) {
+    for (size_t i=2; i<25; i=i+2) {
         bool found = tree->search(i);
         EXPECT_EQ(found, false);
     }

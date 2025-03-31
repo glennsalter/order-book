@@ -2,6 +2,7 @@
 #define ORDERBOOK_NODE_H
 
 #include <algorithm>
+#include <cstddef>
 
 namespace BBST
 {
@@ -9,20 +10,20 @@ namespace BBST
     class Node {
     public:
         T value;
-        int height = 0;
+        size_t height = 0;
         Node* left;
         Node* right;
 
-        explicit Node(int value);
+        explicit Node(T value);
         ~Node();
         void constexpr updateHeight() {
-            const int leftHeight = (left == nullptr) ? 0 : left->height;
-            const int rightHeight = (right == nullptr) ? 0 : right->height;
+            const size_t leftHeight = (left == nullptr) ? 0 : left->height;
+            const size_t rightHeight = (right == nullptr) ? 0 : right->height;
             height = 1 + std::max(leftHeight, rightHeight);
         }
     };
 }
 
-template class BBST::Node<int>;
+template class BBST::Node<size_t>;
 
 #endif //ORDERBOOK_NODE_H
