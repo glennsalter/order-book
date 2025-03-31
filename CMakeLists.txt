@@ -6,13 +6,9 @@ set(PROJECT_SRC_DIR src)
 set(PROJECT_LIBS_DIR libs)
 set(PROJECT_TEST_DIR tests)
 set(PROJECT_NAME order-book)
-
 # MODE: TEST | RUN
 set(MODE "TEST")
-#set(MODE "RUN")
 
-add_subdirectory(googletest)             # googletest subdirectory
-include_directories(googletest/include)  # googletest include directory
 
 project(${PROJECT_NAME} VERSION 1.0)
 
@@ -28,6 +24,10 @@ if(MODE STREQUAL "RUN")
 
 elseif(MODE STREQUAL "TEST")
     set(MAIN_TEST main-test)
+
+    add_subdirectory(googletest)             # googletest subdirectory
+    include_directories(googletest/include)  # googletest include directory
+
     enable_testing()
     add_executable(${MAIN_TEST} ${PROJECT_TEST_DIR}/main_test.cc)
     target_link_libraries(${MAIN_TEST} bbst order-queue GTest::gtest_main)
