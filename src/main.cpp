@@ -1,55 +1,24 @@
+#include "bbst/Tree.h"
+#include "orderbook/OrderBook.h"
+#include "orderbook/SPSCQueue.h"
+
 #include <iostream>
 #include <thread>
 #include <cassert>
 #include <vector>
-#include "bbst/Tree.h"
-#include "orderbook/OrderBook.h"
-
+#include <memory>
+#include <format>
 
 int main() {
-    // /*
-    auto orderBook = new OrderBook::OrderBook();
+    auto orderBook = std::make_unique<OrderBook::OrderBook>();
 
-    orderBook->writeCopy.insert(1);
-    orderBook->writeCopy.search(1);
+    auto op = OrderBook::BBSTOperation<size_t>{OrderBook::OperationType::Insert, 1};
+    orderBook->produceOperation(op);
 
-    delete orderBook;
+    // TODO: Sync read copy with write copy
+
+    // size_t val;
+    // orderBook->lowest(val);
+
     return 0;
-    // */
-
-    /*
-    // Test out the BBST
-    auto tree = new BBST::Tree<int>();
-
-    auto insert_work = [&] (int start, int stop) {
-        for (int i=start; i<stop; i++) {
-            const int val = i;
-            tree->insert(val);
-        }
-    };
-
-    auto delete_work = [&] (int start, int stop) {
-        for (int i=start; i<stop; i++) {
-            const int val = i;
-            tree->remove(val);
-        }
-    };
-
-    for (int i=0; i<256; i++) {
-        std::vector<std::thread> threads;
-        threads.reserve(8);
-        threads.emplace_back(insert_work, 0, 32);
-        threads.emplace_back(delete_work, 1, 10);
-
-        for (auto& thread : threads) {
-            thread.join();
-        }
-    }
-
-    tree->print("inorder");
-
-    delete tree;
-    tree = nullptr;
-    return 0;
-    */
 }

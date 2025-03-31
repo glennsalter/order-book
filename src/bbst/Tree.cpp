@@ -30,39 +30,51 @@ Node<T>* Tree<T>::_destructorHelper(Node<T>* node)
 }
 
 template<typename T>
-bool Tree<T>::search(const T& value) const {
-    auto node = _find(value);
+bool Tree<T>::search(const T& val) const {
+    auto node = _find(val);
     if (node==nullptr)
         return false;
     return true;
 }
 
 template<typename T>
-T& Tree<T>::lowest() {
+bool Tree<T>::lowest(T& val) {
     auto current = _root;
+    if (current == nullptr) {
+        return false;
+    }
+
     T& smallest = _root->value;
     while (current != nullptr) {
         smallest = current->value;
         current = current->left;
     }
-    return smallest;
+
+    val = smallest;
+    return true;
 }
 
 template<typename T>
-T& Tree<T>::highest() {
+bool Tree<T>::highest(T& val) {
     auto current = _root;
+    if (current==nullptr) {
+        return false;
+    }
+
     T& highest = _root->value;
     while (current != nullptr) {
         highest = current->value;
         current = current->right;
     }
-    return highest;
+
+    val = highest;
+    return true;
 }
 
 template<typename T>
-void Tree<T>::insert(const T& value) {
+void Tree<T>::insert(const T& val) {
     std::lock_guard<std::mutex> guard(_mutex);
-    _root = _insertHelper(_root, value);
+    _root = _insertHelper(_root, val);
 }
 
 template<typename T>
@@ -191,9 +203,9 @@ Node<T>* Tree<T>::_leftRotate(Node<T>* N) {
 };
 
 template<typename T>
-void Tree<T>::remove(const T& value) {
+void Tree<T>::remove(const T& val) {
     std::lock_guard<std::mutex> guard(_mutex);
-    _root = _removeHelper(_root, value);
+    _root = _removeHelper(_root, val);
 }
 
 template<typename T>

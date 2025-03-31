@@ -13,11 +13,11 @@ namespace BBST {
         Tree();
         ~Tree();
         Tree(const Tree& other);
-        void insert(const T& value);
-        void remove(const T& value);
-        bool search(const T& value) const;
-        T& lowest();
-        T& highest();
+        void insert(const T& val);
+        void remove(const T& val);
+        bool search(const T& val) const;
+        bool lowest(T& val);
+        bool highest(T& val);
         void print(std::string order) {
             if (order == "inorder")
                 _inOrderOutput(_root);

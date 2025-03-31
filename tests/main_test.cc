@@ -1,7 +1,10 @@
+#include "../src/bbst/Tree.h"
+#include "../src/orderbook/SPSCQueue.h"
+
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>
-#include "../src/bbst/Tree.h"
+#include <format>
 
 // Demonstrate some basic assertions.
 TEST(HelloTest, BasicAssertions) {
@@ -22,10 +25,12 @@ TEST(InsertTest, TestBBST) {
         tree->insert(i);
     }
 
-    auto lowest = tree->lowest();
+    size_t lowest;
+    tree->lowest(lowest);
     EXPECT_EQ(lowest, start);
 
-    auto highest = tree->highest();
+    size_t highest;
+    tree->highest(highest);
     EXPECT_EQ(highest, stop);
 }
 
@@ -54,5 +59,108 @@ TEST(DeleteTest, TestBBST) {
     for (size_t i=2; i<25; i=i+2) {
         bool found = tree->search(i);
         EXPECT_EQ(found, false);
+    }
+}
+
+TEST(ConcurrentTest, TestBBST) {
+    /*
+     * This test concurrently tries to insert the numbers 0...31 while deleting 1...9
+     * Does this 256 times
+     * Prints out the inorder traversal, lowest, and highest value
+     */
+    auto tree = std::make_unique<BBST::Tree<size_t>>();
+
+    auto insert_work = [&] (size_t start, size_t stop) {
+        for (size_t i=start; i<stop; i++) {
+            const size_t val = i;
+            tree->insert(val);
+        }
+    };
+
+    auto delete_work = [&] (size_t start, size_t stop) {
+        for (size_t i=start; i<stop; i++) {
+            const size_t val = i;
+            tree->remove(val);
+        }
+    };
+
+    for (size_t i=0; i<256; i++) {
+        std::vector<std::thread> threads;
+        threads.reserve(8);
+        threads.emplace_back(insert_work, 0, 32);
+        threads.emplace_back(delete_work, 1, 10);
+
+        for (auto& thread : threads) {
+            thread.join();
+        }
+    }
+
+    std::cout << "Inorder traversal: ";
+    tree->print("inorder");
+
+    size_t lowest, highest;
+    tree->lowest(lowest);
+    tree->highest(highest);
+    std::cout << std::format("Lowest: {}, Highest: {}\n", lowest, highest);
+}
+
+TEST(PushPopTest, TestSPSCQueue) {
+    using namespace OrderBook;
+
+    auto queue = std::make_unique<SPSCQueue<BBSTOperation<size_t>>>(5);
+
+    for (int i=0; i<5; i++) {
+        auto op = BBSTOperation<size_t>(OperationType::Insert, i);
+        if (!queue->push(op)) {
+            std::cout << "Full\n";
+        }
+    }
+
+    for (int i=0; i<5; i++) {
+        BBSTOperation<size_t> op{};
+        if (queue->pop(op)) {
+            std::cout << op.param << "\n";
+        } else {
+            std::cout << "Empty\n";
+        }
+    }
+}
+
+TEST(ConcurrentTest, TestSPSCQueue) {
+    /*
+     * This test concurrently tries to push and pop to the queue
+     */
+    using namespace OrderBook;
+
+    auto queue = std::make_unique<SPSCQueue<BBSTOperation<size_t>>>(2<<8);
+
+    auto push_work = [&] (size_t start, size_t stop) {
+        for (size_t i=start; i<stop; i++) {
+            auto op = OrderBook::BBSTOperation<size_t> {OperationType::Insert, i};
+            if (queue->push(op))
+                std::cout << op.param << "\n";
+            else
+                std::cout << "Full\n";
+        }
+    };
+
+    auto pop_work = [&] (size_t start, size_t stop) {
+        size_t val;
+        for (size_t i=start; i<stop; i++) {
+            BBSTOperation<size_t> op{};
+            if(queue->pop(op))
+                std::cout << op.param << "\n";
+            else
+                std::cout << "Empty\n";
+        }
+    };
+
+    std::vector<std::thread> threads;
+    threads.reserve(2);
+    threads.emplace_back(push_work, 1, 2<<10);
+    threads.emplace_back(pop_work, 1, 2<<8);
+
+    for (auto& thread: threads) {
+        thread.join();
     }
 }

@@ -7,7 +7,7 @@ set(PROJECT_LIBS_DIR libs)
 set(PROJECT_TEST_DIR tests)
 set(PROJECT_NAME order-book)
 # MODE: TEST | RUN
-set(MODE "TEST")
+set(MODE "RUN")
 
 
 project(${PROJECT_NAME} VERSION 1.0)
@@ -15,12 +15,11 @@ project(${PROJECT_NAME} VERSION 1.0)
 configure_file(${PROJECT_SRC_DIR}/config.h.in ${PROJECT_BINARY_DIR}/config.h)
 
 add_subdirectory(${PROJECT_SRC_DIR}/bbst)
-add_subdirectory(${PROJECT_SRC_DIR}/order-queue)
 add_subdirectory(${PROJECT_SRC_DIR}/orderbook)
 
 if(MODE STREQUAL "RUN")
     add_executable(${PROJECT_NAME} ${PROJECT_SRC_DIR}/main.cpp)
-    target_link_libraries(${PROJECT_NAME} PRIVATE bbst order-queue orderbook)
+    target_link_libraries(${PROJECT_NAME} PRIVATE bbst orderbook)
 
 elseif(MODE STREQUAL "TEST")
     set(MAIN_TEST main-test)
@@ -30,7 +29,7 @@ elseif(MODE STREQUAL "TEST")
 
     enable_testing()
     add_executable(${MAIN_TEST} ${PROJECT_TEST_DIR}/main_test.cc)
-    target_link_libraries(${MAIN_TEST} bbst order-queue GTest::gtest_main)
+    target_link_libraries(${MAIN_TEST} bbst orderbook GTest::gtest_main)
     include(GoogleTest)
     gtest_discover_tests(${MAIN_TEST})
 else()
